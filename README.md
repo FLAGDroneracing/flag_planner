@@ -23,18 +23,17 @@ Receding Horizon Planning (RHP)框架，在可信的地图范围内进行路径�
 </p>  
 
 ### <span id="jump2"> 2. Astar </span>
-使用A*算法实现无人机当前位置到目标位置的实时路径规划。该算法维护了一个启发式估价函数：
-$$
-f(n) = g(n) + h(n) 
-$$
-![y等于x的平方](https://latex.codecogs.com/svg.image?f(n)&space;=&space;g(n)&space;&plus;&space;h(n))  
+使用A*算法实现无人机当前位置到目标位置的实时路径规划。该算法维护了一个启发式估价函数：  
+
+![Astar](https://latex.codecogs.com/svg.image?f(n)&space;=&space;g(n)&space;&plus;&space;h(n))   
+
 该函数以最短路径为优化目标，g(n)为起始节点到当前节点的代价，h(n)为启发式函数，表示当前节点到终点的代价。考虑到计算速度与路径长度，结合所使用的栅格模型，将启发函数设置为对角线距离。
 
 ### <span id="jump3"> 3. Bspline </span>
-由于四旋翼无人机具有微分平坦特性，因此本设计在四旋翼平坦空间${x, y, z, yaw}$进行规划，最终解算的控制指令映射到全状态空间实现无人机实时的姿态控制。本设计采用 B 样条曲线作为运动基元生成参考轨迹，并将样条曲线控制点作为优化变量。为保证边界状态不改变，忽略起点与终点各 3 个控制点，只对${C_2, C_3, … , C_{N−3}}$进行优化。构建优化函数的表达式如下：
-$$
-min J_{total} = λ_sJ_s + λ_cJ_c + λ_fJ_f
-$$
+由于四旋翼无人机具有微分平坦特性，因此本设计在四旋翼平坦空间${x, y, z, yaw}$进行规划，最终解算的控制指令映射到全状态空间实现无人机实时的姿态控制。本设计采用 B 样条曲线作为运动基元生成参考轨迹，并将样条曲线控制点作为优化变量。为保证边界状态不改变，忽略起点与终点各 3 个控制点，只对![Bspline1](https://latex.codecogs.com/svg.image?{C_2,&space;C_3,&space;…&space;,&space;C_{N−3}})进行优化。构建优化函数的表达式如下：
+
+![Bspline2](https://latex.codecogs.com/svg.image?min&space;J_{total}&space;=&space;\lambda_sJ_s&space;&plus;&space;\lambda_cJ_c&space;&plus;&space;\lambda_fJ_f)
+
 其中{J_s、J_e、J_f}分别为平滑度、碰撞度和可行性成本。{λ_s, λ_c, λ_f}是每个成本项的权重。平滑度成本定义为最小化 jerk 项，碰撞度成本定义为当前控制点集在欧式距离场地图（ESDF）上的和，可行性成本定义为轨迹对速度和加速度上下界的违背程度。各项成本的表达式与梯度函数均为解析函数，初始可行解由 A*算法给出。在此基础上，使用梯度下降法 `L-BFGS` 可实现快速求解。
 
 ### <span id="jump4"> 4. RHP </span>
