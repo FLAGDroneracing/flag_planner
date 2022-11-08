@@ -114,7 +114,12 @@ git clone https://github.com/FLAGDroneracing/flag_planner.git
 catkin_make
 ```
 
-编译完成后，通过以下方式启动仿真器:    
+编译完成后，需要在`.bashrc`文件中最后一行添加命令：
+```
+eval "$RUN_AFTER_BASHRC"
+```
+
+重启终端或运行`source ~/.bashrc`以应用改动。通过以下方式启动仿真器:    
 ```linux-kernel-module
 source devel/setup.bash 
 ./static_planner.sh
