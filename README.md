@@ -30,7 +30,7 @@ Receding Horizon Planning (RHP)框架，在可信的地图范围内进行路径�
 该函数以最短路径为优化目标，g(n)为起始节点到当前节点的代价，h(n)为启发式函数，表示当前节点到终点的代价。考虑到计算速度与路径长度，结合所使用的栅格模型，将启发函数设置为对角线距离。
 
 ### <span id="jump3"> 3. Bspline </span>
-由于四旋翼无人机具有微分平坦特性，因此本设计在四旋翼平坦空间${x, y, z, yaw}$进行规划，最终解算的控制指令映射到全状态空间实现无人机实时的姿态控制。本设计采用 B 样条曲线作为运动基元生成参考轨迹，并将样条曲线控制点作为优化变量。为保证边界状态不改变，忽略起点与终点各 3 个控制点，只对![Bspline1](https://latex.codecogs.com/svg.image?{C_2,&space;C_3,&space;…&space;,&space;C_{N−3}})进行优化。构建优化函数的表达式如下：
+由于四旋翼无人机具有微分平坦特性，因此本设计在四旋翼平坦空间${x, y, z, yaw}$进行规划，最终解算的控制指令映射到全状态空间实现无人机实时的姿态控制。本设计采用 B 样条曲线作为运动基元生成参考轨迹，并将样条曲线控制点作为优化变量。为保证边界状态不改变，忽略起点与终点各 3 个控制点，只对![Bspline1]([https://latex.codecogs.com/svg.image?{C_2,&space;C_3,&space;…&space;,&space;C_{N−3}}](https://latex.codecogs.com/svg.image?\{C_2,&space;C_3,...,C_{N-3}\}))进行优化。构建优化函数的表达式如下：
 
 ![Bspline2](https://latex.codecogs.com/svg.image?min&space;J_{total}&space;=&space;\lambda_sJ_s&space;&plus;&space;\lambda_cJ_c&space;&plus;&space;\lambda_fJ_f)
 
