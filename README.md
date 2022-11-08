@@ -13,6 +13,7 @@
 * [可调整的参数](#可调整的参数)
 * [补充](#补充)
 * [Changelog-更新日志](#Changelog-更新日志)
+* [已找出的问题](#已找出的问题)
 
 ## 介绍
 ### <span id="jump1"> 1. 算法框架  </span>
@@ -114,7 +115,12 @@ git clone https://github.com/FLAGDroneracing/flag_planner.git
 catkin_make
 ```
 
-编译完成后，通过以下方式启动仿真器:    
+编译完成后，需要在`.bashrc`文件中最后一行添加命令：
+```
+eval "$RUN_AFTER_BASHRC"
+```
+
+重启终端或运行`source ~/.bashrc`以应用改动。通过以下方式启动仿真器:    
 ```linux-kernel-module
 source devel/setup.bash 
 ./static_planner.sh
@@ -184,5 +190,10 @@ sudo apt-get install ros-melodic-plotjuggler
  </p>
 
 参考文章：https://blog.csdn.net/qq_39779233/article/details/106478608  
+## 已找出的问题
+1. 到达终点时可能会有小幅波动
+2. `control_bspline` 有时会卡死
+3. 斜向曲线有误差
 ## Changelog-更新日志
 待补充
+
