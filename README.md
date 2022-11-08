@@ -27,6 +27,7 @@ Receding Horizon Planning (RHP)框架，在可信的地图范围内进行路径�
 $$
 f(n) = g(n) + h(n) 
 $$
+![y等于x的平方](https://latex.codecogs.com/svg.image?f(n)&space;=&space;g(n)&space;&plus;&space;h(n))  
 该函数以最短路径为优化目标，g(n)为起始节点到当前节点的代价，h(n)为启发式函数，表示当前节点到终点的代价。考虑到计算速度与路径长度，结合所使用的栅格模型，将启发函数设置为对角线距离。
 
 ### <span id="jump3"> 3. Bspline </span>
