@@ -32,8 +32,17 @@ class DynamicEnvGenerator
         std::vector<double> obs_sizes; // 障碍物尺寸
         std::vector<double> obs_velocities;    // 障碍物速度
         std::vector<double> moving_ranges;  
+        int rings_num;  // 圆环的个数
+        std::vector<double> rings_poses;    // 圆环位置
+        std::vector<double> rings_origin_poses;
+        std::vector<double> rings_sizes;    // 圆环尺寸
+        std::vector<double> rings_velocities;   // 圆环速度 
+        std::vector<double> rings_directions;    // 圆环朝向
+        std::vector<double> rings_ranges;   // 圆环运动范围
+        
 
         pcl::PointCloud<pcl::PointXYZ> generate_dynamic_obs(std::vector<double> obs_size, std::vector<double> obs_pos, double resolution, int type);  // 创建动态障碍物的点云
+        pcl::PointCloud<pcl::PointXYZ> generate_ring(std::vector<double> ring_size, std::vector<double> ring_pos, double ring_direct, double resolution); // 创建圆环的点云
 
         /* ROS subers, timers and pubers */
         ros::NodeHandle nh;
