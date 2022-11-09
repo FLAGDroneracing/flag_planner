@@ -114,6 +114,7 @@ cd ${YOUR_WORKSPACE_PATH}
 git clone https://github.com/FLAGDroneracing/flag_planner.git
 catkin_make
 ```
+编译过程中若出现提示没有bspline_race/BsplineTraj.h等头文件，将文件夹`include_msg`中的文件夹复制到`devel/include`中.
 
 编译完成后，需要在`.bashrc`文件中最后一行添加命令：
 ```
