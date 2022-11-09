@@ -33,7 +33,8 @@ struct BsplineTraj_
     , velocity()
     , acceleration()
     , yaw(0.0)
-    , yaw_rate(0.0)  {
+    , yaw_rate(0.0)
+    , current_seq(0)  {
     }
   BsplineTraj_(const ContainerAllocator& _alloc)
     : header(_alloc)
@@ -41,7 +42,8 @@ struct BsplineTraj_
     , velocity(_alloc)
     , acceleration(_alloc)
     , yaw(0.0)
-    , yaw_rate(0.0)  {
+    , yaw_rate(0.0)
+    , current_seq(0)  {
   (void)_alloc;
     }
 
@@ -64,6 +66,9 @@ struct BsplineTraj_
 
    typedef float _yaw_rate_type;
   _yaw_rate_type yaw_rate;
+
+   typedef uint32_t _current_seq_type;
+  _current_seq_type current_seq;
 
 
 
@@ -99,7 +104,8 @@ bool operator==(const ::bspline_race::BsplineTraj_<ContainerAllocator1> & lhs, c
     lhs.velocity == rhs.velocity &&
     lhs.acceleration == rhs.acceleration &&
     lhs.yaw == rhs.yaw &&
-    lhs.yaw_rate == rhs.yaw_rate;
+    lhs.yaw_rate == rhs.yaw_rate &&
+    lhs.current_seq == rhs.current_seq;
 }
 
 template<typename ContainerAllocator1, typename ContainerAllocator2>
@@ -156,12 +162,12 @@ struct MD5Sum< ::bspline_race::BsplineTraj_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "7a06ed7c3a765758a36274e2972cf0f0";
+    return "47fe784cc6ad92a6cd7d1488e4d545d9";
   }
 
   static const char* value(const ::bspline_race::BsplineTraj_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x7a06ed7c3a765758ULL;
-  static const uint64_t static_value2 = 0xa36274e2972cf0f0ULL;
+  static const uint64_t static_value1 = 0x47fe784cc6ad92a6ULL;
+  static const uint64_t static_value2 = 0xcd7d1488e4d545d9ULL;
 };
 
 template<class ContainerAllocator>
@@ -188,6 +194,8 @@ struct Definition< ::bspline_race::BsplineTraj_<ContainerAllocator> >
 "\n"
 "float32 yaw\n"
 "float32 yaw_rate\n"
+"uint32 current_seq\n"
+"\n"
 "================================================================================\n"
 "MSG: std_msgs/Header\n"
 "# Standard metadata for higher-level stamped data types.\n"
@@ -255,6 +263,7 @@ namespace serialization
       stream.next(m.acceleration);
       stream.next(m.yaw);
       stream.next(m.yaw_rate);
+      stream.next(m.current_seq);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -304,6 +313,8 @@ struct Printer< ::bspline_race::BsplineTraj_<ContainerAllocator> >
     Printer<float>::stream(s, indent + "  ", v.yaw);
     s << indent << "yaw_rate: ";
     Printer<float>::stream(s, indent + "  ", v.yaw_rate);
+    s << indent << "current_seq: ";
+    Printer<uint32_t>::stream(s, indent + "  ", v.current_seq);
   }
 };
 
