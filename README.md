@@ -1,5 +1,5 @@
-# uav_simulator
-轻量化的无人机仿真器 
+# flag planner
+轻量化的无人机规划仿真器 
 ## Table of Contents
 
 * [介绍](#介绍)  
