@@ -191,8 +191,11 @@ sudo apt-get install ros-melodic-plotjuggler
 
 参考文章：https://blog.csdn.net/qq_39779233/article/details/106478608  
 ## 已找出的问题
-1. 到达终点时可能会有小幅波动
+~~1. 到达终点时可能会有小幅波动~~
+
 2. `control_bspline` 有时会卡死
+
 3. 斜向曲线有误差
 ## Changelog-更新日志
 待补充
+
