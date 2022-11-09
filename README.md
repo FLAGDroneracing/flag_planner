@@ -114,16 +114,15 @@ cd ${YOUR_WORKSPACE_PATH}
 git clone https://github.com/FLAGDroneracing/flag_planner.git
 catkin_make
 ```
-编译过程中若出现提示没有bspline_race/BsplineTraj.h等头文件，将文件夹`include_msg`中的文件夹复制到`devel/include`中.
 
 编译完成后，需要在`.bashrc`文件中最后一行添加命令：
 ```
+source ${YOUR_WORKSPACE_PATH}/devel/setup.bash 
 eval "$RUN_AFTER_BASHRC"
 ```
 
 重启终端或运行`source ~/.bashrc`以应用改动。通过以下方式启动仿真器:    
 ```linux-kernel-module
-source devel/setup.bash 
 ./static_planner.sh
 ```
  ```rviz``` 中会生成随机地图与无人机，使用```2D Nav Goal```为无人机选择目标。这里展示了一个模拟示例：
@@ -197,4 +196,3 @@ sudo apt-get install ros-melodic-plotjuggler
 3. 斜向曲线有误差
 ## Changelog-更新日志
 待补充
-
