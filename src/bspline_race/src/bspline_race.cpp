@@ -1001,35 +1001,35 @@ void plan_manager::current_state_callback(const geometry_msgs::TwistStampedConst
             opt->setVelAcc(max_vel_,max_acc_);
             opt->setSplineParam(spline);
             opt->optimize();
-            //计算轨迹
-            // cout <<"\033[46m--------------------grid_path - control_points_--------------------"<<endl;
-            // int i = 0;
-            // for(auto ptr : astar_path_)
-            // {Eigen::Vector2d xxx(opt->control_points_(3+i,0),opt->control_points_(3+i,1));
-            // cout << Eigen::Vector2d(ptr - xxx).norm() <<endl;
-            // i++;
-            // }
-            // // cout <<"----------------------------------------\033[0m"<<endl;
-            // auto old_ptr = (*astar_path_.begin());
-            // cout <<"\033[45m--------------------grid_path--------------------"<<endl;
-            // for(auto ptr : astar_path_)
-            // {
-            // cout << ptr <<endl;
-            // cout << "- - -"<<endl;
-            // cout << Eigen::Vector2d(ptr - old_ptr).norm() <<endl;
-            // cout << "- - -"<<endl;
-            // old_ptr = ptr;
-            // }
-            // cout <<"----------------------------------------\033[0m"<<endl;
-            // cout <<"\033[45m--------------------control_points_--------------------"<<endl;
-            // i = 0;
-            // for(auto ptr : astar_path_)
-            // {Eigen::Vector2d xxx(opt->control_points_(3+i,0),opt->control_points_(3+i,1));
-            // cout << xxx <<endl;
-            // cout << "- - -"<<endl;
-            // i++;
-            // }
-            // cout <<"----------------------------------------\033[0m"<<endl;
+            // 计算轨迹
+            cout <<"\033[46m--------------------grid_path - control_points_--------------------"<<endl;
+            int i = 0;
+            for(auto ptr : astar_path_)
+            {Eigen::Vector2d xxx(opt->control_points_(3+i,0),opt->control_points_(3+i,1));
+            cout << Eigen::Vector2d(ptr - xxx).norm() <<endl;
+            i++;
+            }
+            cout <<"----------------------------------------\033[0m"<<endl;
+            auto old_ptr = (*astar_path_.begin());
+            cout <<"\033[45m--------------------grid_path--------------------"<<endl;
+            for(auto ptr : astar_path_)
+            {
+            cout << ptr <<endl;
+            cout << "- - -"<<endl;
+            cout << Eigen::Vector2d(ptr - old_ptr).norm() <<endl;
+            cout << "- - -"<<endl;
+            old_ptr = ptr;
+            }
+            cout <<"----------------------------------------\033[0m"<<endl;
+            cout <<"\033[45m--------------------control_points_--------------------"<<endl;
+            i = 0;
+            for(auto ptr : astar_path_)
+            {Eigen::Vector2d xxx(opt->control_points_(3+i,0),opt->control_points_(3+i,1));
+            cout << xxx <<endl;
+            cout << "- - -"<<endl;
+            i++;
+            }
+            cout <<"----------------------------------------\033[0m"<<endl;
             u->setControlPoints(opt->control_points_);
             u->getT(TrajSampleRate);
             UniformBspline p = *u;

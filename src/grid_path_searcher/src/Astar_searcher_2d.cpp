@@ -925,8 +925,20 @@ vector<Vector2d> AstarPathFinder2d::getTwist_checkcolision3(Eigen::Vector2d star
             j++;
             iter_head = iter;
         }
+        if(iter == gridPath.end()-1)
+        {
+            path.push_back(end_ptr->coord);
+        }
     }
-    if(path.size() == 1) path.push_back((*(gridPath.end()-1))->coord);
+    
+    // if(!check_point.first)
+    // {
+    //     path.push_back((*(gridPath.end()-1))->coord);
+    // }
+    // else if(path.size() == 1) 
+    // {
+    //     path.push_back(*(path.end()-1));
+    // }
     // cout << "\033[45m[debug] size of path: " << path.size() << "\033[0m\n";
     // path.push_back((*(gridPath.end()-1))->coord);
     return path;
