@@ -220,7 +220,7 @@ void DynamicEnvGenerator::generate_dynamic_env(ros::NodeHandle& n)
     nh.getParam("/rings_directions", rings_directions);
     nh.getParam("/rings_velocities", rings_velocities);
     nh.getParam("/rings_ranges", rings_ranges);
-    dynamic_cloud.header.frame_id = "map";
+    dynamic_cloud.header.frame_id = "world";
 
     /* check params */
     std::cout << "dynamic obs num:" << dynamic_obs_num << std::endl;

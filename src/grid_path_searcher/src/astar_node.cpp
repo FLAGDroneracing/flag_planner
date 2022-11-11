@@ -292,7 +292,7 @@ void simPoseCallback(const mavros_msgs::PositionTarget & aim_msg)
     current_acc[0] = aim_msg.acceleration_or_force.x;
     current_acc[1] = aim_msg.acceleration_or_force.y;
     current_seq = (int)aim_msg.yaw;
-    actual_height = aim_msg.position.z;
+    actual_height = aim_msg.position.z; // BUG
     _astar_path_finder->start_pt_real = _start_pt;
 
 }

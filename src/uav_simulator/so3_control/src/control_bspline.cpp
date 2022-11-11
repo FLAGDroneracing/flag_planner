@@ -3,6 +3,7 @@
 #include <quadrotor_msgs/PositionCommand.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <mavros_msgs/PositionTarget.h>
+#include <nav_msgs/Path.h>
 #include <bspline_race/BsplineTraj.h>
 #include <ros/ros.h>
 using namespace std;
@@ -20,7 +21,7 @@ int connect_seq = 0;
 Eigen::Vector3d vel_drone_fcu;
 static geometry_msgs::PoseStamped aim;
 quadrotor_msgs::PositionCommand pva_msg;
-
+nav_msgs::Path vis_path;
 class bs_traj
 {
     public:
@@ -42,7 +43,8 @@ std::pair<double, double> cal_yaw( double current_yaw,double aim_yaw);
 
 ros::Publisher cmd_pub,
                bs_pub,
-               debug_pub;
+               debug_pub,
+               vis_path_pub;
 ros::Subscriber pts_sub,
                 cmd_sub,
                 pos_sub;
@@ -138,6 +140,12 @@ void run()
         pva_msg.header.stamp = ros::Time::now();
         cmd_pub.publish(pva_msg);
         debug_pub.publish(debug_msg);
+
+        // VIS
+        geometry_msgs::PoseStamped vis_msg;
+        vis_msg.pose.position = pva_msg.position;
+        vis_path.poses.push_back(vis_msg);
+        vis_path_pub.publish(vis_path);
 }
 
 void pose_subCallback(const geometry_msgs::PoseStamped::ConstPtr & msg)
@@ -208,6 +216,8 @@ void rcvWaypointsCallback(const geometry_msgs::PoseStamped::ConstPtr & wp)
 {     
   first_bs = true;
   BTraj.clear();
+  vis_path.poses.clear();
+  vis_path.header.frame_id = "world";
 }
 
 std::pair<double, double> cal_yaw( double current_yaw,double aim_yaw)
@@ -322,9 +332,11 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "bspline_example");
     ros::NodeHandle nh("~");
-    cmd_pub   = nh.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 10);
-    bs_pub    = nh.advertise<mavros_msgs::PositionTarget>("/mavbs/setpoint_raw/local" , 1);
-    debug_pub = nh.advertise<geometry_msgs::PoseStamped>("/debug",1);
+    cmd_pub      = nh.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 10);
+    bs_pub       = nh.advertise<mavros_msgs::PositionTarget>("/mavbs/setpoint_raw/local" , 1);
+    debug_pub    = nh.advertise<geometry_msgs::PoseStamped>("/debug",1);
+    vis_path_pub = nh.advertise<nav_msgs::Path>("/pubed_path",1);
+    
     pts_sub   = nh.subscribe<geometry_msgs::PoseStamped>( "/move_base_simple/goal", 10, &rcvWaypointsCallback );
     cmd_sub   = nh.subscribe<bspline_race::BsplineTraj>("/bspline_traj",1, &bspline_subCallback);
     pos_sub   = nh.subscribe<geometry_msgs::PoseStamped>("/odom_visualization/pose",1,&pose_subCallback);
