@@ -17,6 +17,7 @@ class AstarPathFinder2d
 	protected:
 		uint8_t * data;
 		GridNodePtr2d ** GridNodeMap;
+		std::vector<GridNodePtr2d> usedGridNode;
 		Eigen::Vector2i goalIdx;
 		int GLX_SIZE, GLY_SIZE, GLXY_SIZE;//, GLZ_SIZE;
 		// int GLXYZ_SIZE, GLYZ_SIZE;

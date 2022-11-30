@@ -56,9 +56,9 @@ void AstarPathFinder2d::resetGrid(GridNodePtr2d ptr)
 
 void AstarPathFinder2d::resetUsedGrids()
 {   
-    for(int i=0; i < GLX_SIZE ; i++)
-        for(int j=0; j < GLY_SIZE ; j++)
-            resetGrid(GridNodeMap[i][j]);
+    for(int i = 0; i < usedGridNode.size(); i++)
+        resetGrid(usedGridNode[i]);
+    usedGridNode.clear();
 }
 
 void AstarPathFinder2d::setObs(const double coord_x, const double coord_y)
@@ -78,23 +78,21 @@ void AstarPathFinder2d::setObs(const double coord_x, const double coord_y)
     data[idx_x * GLY_SIZE + idx_y] = 1;
 
     //膨胀一圈
-    data[(idx_x-1)  * GLY_SIZE + idx_y+1] = 1;
-    data[(idx_x-1)  * GLY_SIZE + idx_y] = 1;
-    data[(idx_x-1)  * GLY_SIZE + idx_y-1] = 1;
+    data[(idx_x-1)  * GLY_SIZE + idx_y+1]    = 1;
+    data[(idx_x-1)  * GLY_SIZE + idx_y]      = 1;
+    data[(idx_x-1)  * GLY_SIZE + idx_y-1]    = 1;
     data[idx_x         * GLY_SIZE + idx_y+1] = 1;
 // data[idx_x         * GLY_SIZE + idx_y] = 1;
     data[idx_x         * GLY_SIZE + idx_y-1] = 1;
-    data[(idx_x+1) * GLY_SIZE + idx_y+1] = 1;
-    data[(idx_x+1) * GLY_SIZE + idx_y] = 1;
-    data[(idx_x+1) * GLY_SIZE + idx_y-1] = 1;
+    data[(idx_x+1) * GLY_SIZE + idx_y+1]     = 1;
+    data[(idx_x+1) * GLY_SIZE + idx_y]       = 1;
+    data[(idx_x+1) * GLY_SIZE + idx_y-1]     = 1;
     
 
 }
 void AstarPathFinder2d::cleanObs()
 {   
-    for(int i = 0;i<GLXY_SIZE;i++){
-        data[i] = 0;
-    }
+    memset(data, 0, GLXY_SIZE * sizeof(uint8_t));
 }
 void AstarPathFinder2d::cleanStartObs(Eigen::Vector2d _start_pt){
     Eigen::Vector2i pt;
@@ -344,6 +342,7 @@ bool AstarPathFinder2d::AstarGraphSearch(Vector2d start_pt, Vector2d end_pt)
     //STEP 1: finish the AstarPathFinder2d::getHeu , which is the heuristic function
     startPtr -> id = 1; 
     startPtr -> coord = start_pt;
+    usedGridNode.push_back(startPtr);
     // make_pair的用法:无需写出型别,就可以生成一个pair对象;比如std::make_pair(42, '@'),而不必费力写成：std::pair<int, char>(42, '@')
     //todo Note: modified, insert the pointer GridNodeMap[i][j][k] to the start node in grid map
     openSet.insert( make_pair(startPtr -> fScore, startPtr) ); 
@@ -361,6 +360,7 @@ bool AstarPathFinder2d::AstarGraphSearch(Vector2d start_pt, Vector2d end_pt)
     // 这个到底需不需要???测试后发现不需要也可以实现功能
     // JS: 标识该结点已进入openset
     GridNodeMap[start_idx[0]][start_idx[1]] -> id = 1;
+    usedGridNode.push_back(GridNodeMap[start_idx[0]][start_idx[1]]);
 
     vector<GridNodePtr2d> neighborPtrSets;
     vector<double> edgeCostSets;
@@ -407,6 +407,7 @@ bool AstarPathFinder2d::AstarGraphSearch(Vector2d start_pt, Vector2d end_pt)
             continue;
         // 标记id为-1,表示节点已被扩展
         currentPtr->id = -1;
+        usedGridNode.push_back(currentPtr);
 
         // currentPtr = openSet.begin() -> second; // first T1, second T2
         // openSet.erase(openSet.begin()); // remove the node with minimal f value
@@ -474,6 +475,7 @@ bool AstarPathFinder2d::AstarGraphSearch(Vector2d start_pt, Vector2d end_pt)
                 // push node "m" into OPEN
                 openSet.insert(make_pair(neighborPtr -> fScore, neighborPtr));
                 neighborPtr -> id = 1;
+                usedGridNode.push_back(neighborPtr);
                 continue;
             }
             else if(neighborPtr -> id == 1){ //this node is in open set and need to judge if it needs to update, the "0" should be deleted when you are coding

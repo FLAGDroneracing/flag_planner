@@ -155,38 +155,7 @@ void rcvPointCloudCallBack(const sensor_msgs::PointCloud2::ConstPtr & pointcloud
     // ROS_INFO_DELAYED_THROTTLE(1,"[Astar] Pointcloud received.");
     ROS_INFO("[Astar] Pointcloud received.");
     std_msgs::Int64 arr_msg;
-    // logi
-    // if(!_has_target)
-    // {
-    //     ROS_WARN_DELAYED_THROTTLE(1,"[Astar] No target!");
-    // }else  {
-    //     // cout << "\033[35m[Astar] current _start_pt:\n"<<_start_pt<<" \033[0m"<<endl;
-    //     if(_astar_path_finder -> getData(_target_pt)) 
-    //     {
-    //         ROS_ERROR_DELAYED_THROTTLE(2,"[Astar] _target_pt is Occupied! PathFinding will not run!");
-    //         // BUG 準備找到到最進的點代替被占據的目標點
-            
-    //     }
-    //     else if(_astar_path_finder->arrived(_start_pt,_target_pt)) 
-    //     {
-    //         ROS_WARN_DELAYED_THROTTLE(1,"[Astar] Arrived! PathFinding will not run!");
-    //         arr_msg.data = 1;
-    //         _arrived_pub.publish(arr_msg);
-    //     }
-    //     else {
-    //     if(_astar_path_finder->getData(_start_pt)) 
-    //     {
-    //         ROS_WARN_DELAYED_THROTTLE(1,"[Astar] _start_pt is Occupied! Reset Obs. BE CAREFUL!");
-    //         _astar_path_finder -> cleanStartObs(_start_pt);
-    //     }
-    //     if(!pathFinding(_start_pt, _target_pt)) ROS_ERROR_DELAYED_THROTTLE(2,"[Astar] No path provide!"); 
-    //     else{
-    //         arr_msg.data = -1;
-    //         _arrived_pub.publish(arr_msg);
-    //     }
-    //     }
-    // }
-    
+
     if(!_has_target)
     {
         cout << "\033[33m[Astar] No target!\033[0m" << endl;
@@ -271,18 +240,9 @@ void rcvWaypointsCallback(const geometry_msgs::PoseStamped::ConstPtr & wp)
     _target_pt << wp->pose.position.x,
                   wp->pose.position.y;
     _has_target = true;
-    // ROS_INFO("[node] receive the planning target");
-    // pathFinding(_start_pt, target_pt); 
+    
 }
 
-// void simPoseCallback(const geometry_msgs::PoseStamped & msg)
-// {
-//     _start_pt(0) = msg.pose.position.x;
-//     _start_pt(1) = msg.pose.position.y;
-//     actual_height = msg.pose.position.z;
-//     _astar_path_finder->start_pt_real = _start_pt;
-//     // ROS_WARN("GET POSE");
-// }
 void simPoseCallback(const mavros_msgs::PositionTarget & aim_msg)
 {
     _start_pt[0]  = aim_msg.position.x;
@@ -326,9 +286,10 @@ bool pathFinding(const Vector2d start_pt, const Vector2d target_pt,
     // }
     // cout <<"----------------------------------------\033[0m"<<endl;
     //Visualize the result
-    visGridPath (grid_twist, false);
+    cout <<"(*(grid_twist.begin()))"<< (*(grid_twist.begin())) << endl;
+    visGridPath(grid_twist, false);
     // visVisitedNode(visited_nodes);
-    pubGridPath2(grid_twist);
+    pubGridPath(grid_twist);
     // pubGridTwist(grid_twist);
     // pubGridTwist2(grid_twist);
     pubGridTwist3(grid_twist,vel_,acc_);
@@ -346,8 +307,8 @@ int main(int argc, char** argv)
 
 //sub
     _map_sub = nh.subscribe( "map",  10, rcvPointCloudCallBack );
-    _pts_sub = nh.subscribe( "waypoints", 10, rcvWaypointsCallback );
-    _nav_sub = nh.subscribe( "pose", 10, simPoseCallback );
+    _pts_sub = nh.subscribe( "waypoints", 1, rcvWaypointsCallback );
+    _nav_sub = nh.subscribe( "pose", 1, simPoseCallback );
     _fsm_sub = nh.subscribe( "/flag_detect",1,fsmCallback);
 //pub
     _grid_map_vis_pub      = nh.advertise<sensor_msgs::PointCloud2>("grid_map_vis", 1);
@@ -409,7 +370,7 @@ void pubGridPath2(vector<Vector2d> nodes){
     nav_msgs::Path node_nav;
     node_nav.header.frame_id = "world";
     geometry_msgs::PoseStamped pt;
-    for(int i = 2; i < int(nodes.size()); i++)
+    for(int i = 0; i < int(nodes.size()); i++)
     {
         Vector2d coord = nodes[i];
         pt.header.seq = i+1;
@@ -533,7 +494,7 @@ void visGridPath( vector<Vector2d> nodes, bool is_use_jps )
     node_vis.scale.z = _resolution;
 
     geometry_msgs::Point pt;
-    for(int i = 0; i < int(nodes.size()); i++)
+    for(int i = 0; i < 1; i++)
     {
         Vector2d coord = nodes[i];
         pt.x = coord(0);

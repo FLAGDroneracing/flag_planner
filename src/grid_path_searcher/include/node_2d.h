@@ -5,6 +5,7 @@
 #include <ros/ros.h>
 #include <ros/console.h>
 #include <Eigen/Eigen>
+#include <vector>
 //#include "backward.hpp"
 
 #define inf 1>>20

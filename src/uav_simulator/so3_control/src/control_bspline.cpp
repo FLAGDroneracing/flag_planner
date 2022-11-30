@@ -152,6 +152,84 @@ void pose_subCallback(const geometry_msgs::PoseStamped::ConstPtr & msg)
 {
 
 }
+void traj_cb(const bspline_race::BsplineTrajConstPtr &msg)
+{
+  // 收到新轨迹
+  if(first_bs || BTraj.empty())
+  {
+    // 直接放到BTraj里
+    for (size_t i = 0; i < msg->position.size(); i++)
+    {    
+        bs_traj BT_ptr;
+        BT_ptr.pos_ << msg->position[i].pose.position.x, 
+                       msg->position[i].pose.position.y;
+        BT_ptr.vel_ << msg->velocity[i].pose.position.x, 
+                       msg->velocity[i].pose.position.y;
+        BT_ptr.acc_ << msg->acceleration[i].pose.position.x, 
+                       msg->acceleration[i].pose.position.y;
+        BT_ptr.seq_ = i;
+        BTraj.push_back(BT_ptr);
+    }
+    first_bs = false;
+  }
+  else
+  {
+    // 轨迹拼接
+    int new_traj_start_seq = msg->current_seq ;
+    int delta_seq = new_traj_start_seq - BTraj[0].seq_;
+    cout << "delta_seq: " << delta_seq <<endl;
+    if(delta_seq<0)// 如果当前发过来的轨迹太旧
+    {
+      ROS_WARN("The delay is too large < %i > points away, < %f > ms ago, check the parameter Settings."
+                ,-delta_seq, -delta_seq*delta_T*1000);
+        ROS_ERROR("USLESS.");
+    }
+    else if(delta_seq>BTraj.size())// 如果这个新轨迹的起点超过了当前剩余曲线的终点
+    {
+      ROS_WARN("The scope of replanning is too large, check the parameter Settings.");
+      ROS_ERROR("Wait, something really big has happened...");
+    }
+    else// 终于没事了
+    {
+      std::vector<bs_traj> BTraj_remain;
+      auto start_ptr_ = BTraj.begin();
+      // auto end_ptr_   = BTraj.begin() + delta_seq;// BUG ?悬垂指针？
+      int add_seq_;
+      if(delta_seq < (BTraj.size()-1))  
+      {         
+          add_seq_  = delta_seq-1;
+        //   cout << "delta_seq\n"<<delta_seq<<endl;
+      }
+      else
+      {
+        cout << "啊？"<<endl;
+        add_seq_ = (BTraj.size()-1);
+      }
+      auto end_ptr_   = BTraj.begin() + add_seq_;
+      if(add_seq_ > 0)
+      BTraj_remain.assign(start_ptr_,end_ptr_);// 存储剩余的可用路径
+      int old_traj_end_seq = end_ptr_->seq_;
+      (*(BTraj_remain.end()-1)).seq_;
+      for (size_t i = 0; i < msg->position.size(); i++)
+      {    
+          bs_traj BT_ptr;
+          BT_ptr.pos_ << msg->position[i].pose.position.x, 
+                         msg->position[i].pose.position.y;
+          BT_ptr.vel_ << msg->velocity[i].pose.position.x, 
+                         msg->velocity[i].pose.position.y;
+          BT_ptr.acc_ << msg->acceleration[i].pose.position.x, 
+                         msg->acceleration[i].pose.position.y;
+          BT_ptr.seq_ = i + new_traj_start_seq;
+          BTraj_remain.push_back(BT_ptr);
+      }
+      BTraj = BTraj_remain;
+      cout << "Successfully connect the trajectory at < "<<old_traj_end_seq
+                                           <<" > ++++ < "<<new_traj_start_seq<<" >."<<endl;
+                
+    }
+  }
+  ROS_INFO("New seq begin at: < %i >, end at: < %i >.",(*(BTraj.begin())).seq_,(*(BTraj.end()-1)).seq_);
+}
 void bspline_subCallback(const bspline_race::BsplineTrajConstPtr &msg)
 {
   bool affine_traj = true;
@@ -338,7 +416,7 @@ int main(int argc, char **argv)
     vis_path_pub = nh.advertise<nav_msgs::Path>("/pubed_path",1);
     
     pts_sub   = nh.subscribe<geometry_msgs::PoseStamped>( "/move_base_simple/goal", 10, &rcvWaypointsCallback );
-    cmd_sub   = nh.subscribe<bspline_race::BsplineTraj>("/bspline_traj",1, &bspline_subCallback);
+    cmd_sub   = nh.subscribe<bspline_race::BsplineTraj>("/bspline_traj",1, &traj_cb);
     pos_sub   = nh.subscribe<geometry_msgs::PoseStamped>("/odom_visualization/pose",1,&pose_subCallback);
     ros::Rate rate(T_RATE);
 while(ros::ok())
